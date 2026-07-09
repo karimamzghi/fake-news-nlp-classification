@@ -313,7 +313,7 @@ The final selected model will be deployed using **Hugging Face Spaces**, allowin
 
 ---
 
-# 👥 Authors
+# Authors
 
 | Name | Role |
 |------|------|
