@@ -65,7 +65,7 @@ def preprocess_text(text):
     return " ".join(tokens)
 
 
-def preprocess_dataframe(X):
+def preprocess_data(X):
     X = X.copy()
 
     X["clean_title"] = X["title"].apply(preprocess_text)
