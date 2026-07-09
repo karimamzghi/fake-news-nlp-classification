@@ -68,8 +68,8 @@ def save_metrics_plot(metrics, experiment_name, save_dir=PLOT_DIR):
 
     plt.savefig(file_path, bbox_inches="tight")
 
-    plt.close()
-
+    plt.show()
+    
     return file_path
 
 
