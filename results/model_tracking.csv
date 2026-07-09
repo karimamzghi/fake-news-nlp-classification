@@ -1,0 +1,2 @@
+model_id,model_name,features,preprocessing,algorithm,train_accuracy,test_accuracy,precision,recall,f1_score,notes,model_path
+exp_01,Baseline Logistic Regression + BoW,Bag of Words,Lowercase + HTML removal + stopword removal + lemmatization,Logistic Regression,0.99996870403405,0.9948679434222055,0.9954943679599499,0.99425,0.9948717948717949,Baseline Logigstic Bow Regresssioon model.,/Users/karima/Ironhack-challenges/fake-news-nlp-classification/models/bow_logistic_regression.pkl

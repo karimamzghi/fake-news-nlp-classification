@@ -16,7 +16,7 @@ def save_experiment_result(
     f1_score,
     notes,
     model_path,
-    csv_path=MODEL_TRACKING_DIR
+    csv_path= MODEL_TRACKING_DIR
 ):
     os.makedirs(os.path.dirname(csv_path), exist_ok=True)
 
