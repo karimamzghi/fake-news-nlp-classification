@@ -234,7 +234,7 @@ Dense semantic vector representations of words.
 
 ---
 
-# 📊 Model Evaluation
+#  Model Evaluation
 
 Each experiment will be evaluated using:
 
