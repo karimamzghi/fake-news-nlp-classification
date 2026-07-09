@@ -318,4 +318,4 @@ The final selected model will be deployed using **Hugging Face Spaces**, allowin
 | Name | Role |
 |------|------|
 | **Karima Mzoughi** | Project Architecture, Machine Learning, Deployment |
-| **Kriti B.** | Exploratory Data Analysis (EDA), Machine Learning |
+| **Kriti B.** | Exploratory Data Analysis (EDA), Machine Learning, Deployment |
