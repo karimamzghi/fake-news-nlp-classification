@@ -1,80 +1,97 @@
-# FakeBusters
-### AI-Powered Fake News Detection
+# FakeBusters: Fake News Detection using Natural Language Processing
 
-> **Can AI distinguish between real and fake news?**
->
-> FakeBusters investigates multiple Natural Language Processing (NLP) techniques and Machine Learning models to identify misinformation in news articles. The project compares traditional text vectorization methods, word embeddings, deep learning, and transformer models to determine the most effective approach.
+## Project Overview
 
----
+FakeBusters is an end-to-end Natural Language Processing (NLP) project that automatically classifies news articles as **REAL** or **FAKE**.
 
-# Team FakeBusters
+The objective of this project was not only to build an accurate fake news classifier, but also to systematically compare multiple Natural Language Processing techniques, feature engineering strategies and machine learning algorithms in order to understand the trade-offs between predictive performance and production complexity.
 
-- Karima Mzoughi
-- Kriti Amin
+A total of **16 experiments** were implemented, ranging from classical Machine Learning models to Deep Learning architectures.
 
 ---
 
-# Project Objective
+# Objectives
 
-The goal of this project is to build an AI system capable of classifying news articles as either: Real News (1) OR Fake News (0)
+The main objectives of this project were:
 
-Rather than relying on a single model, this project explores multiple NLP pipelines and compares their performance to identify the best-performing solution.
+- Build a reusable NLP pipeline.
+- Compare different text representations.
+- Compare traditional Machine Learning models.
+- Compare Deep Learning against classical Machine Learning.
+- Evaluate models using multiple metrics.
+- Track every experiment.
+- Recommend a production-ready model based on engineering trade-offs rather than accuracy alone.
 
 ---
 
 # Dataset
 
-The dataset contains the following columns:
+The project uses a Fake News dataset containing:
 
-| Column | Description |
-|----------|-------------|
-| label | 0 = Fake, 1 = Real |
-| title | News headline |
-| text | Full news article |
-| subject | Topic/category |
-| date | Publication date |
+- News title
+- News article
+- Binary label
+    - REAL
+    - FAKE
 
-After training, the best model will predict the labels for `validation_data.csv`.
+The dataset is divided into:
+
+- Training dataset
+- Test dataset
+- Validation dataset
+
+The validation dataset was intentionally kept unseen during model development and was only used after selecting the final model.
 
 ---
 
 # Project Structure
 
-```text
-fakebusters-fake-news-classification/
+```
+fake-news-nlp-classification/
 │
 ├── dataset/
 │   ├── data.csv
-│   └── validation_data.csv
-│
-├── deployment/
-│   └── app.py
-│
-├── models/
-│   ├── bow_models/
-│   ├── tfidf_models/
-│   ├── embedding_models/
-│   ├── lstm/
-│   └── distilbert/
+│   └── validation.csv
 │
 ├── experiments/
-│   ├── 01_baseline_logistic_regression_bow.ipynb
-│   ├── 02_naive_bayes_bow.ipynb
-│   ├── 03_random_forest_bow.ipynb
-│   ├── 04_svm_bow.ipynb
 │   │
-│   ├── 05_logistic_regression_tfidf.ipynb
-│   ├── 06_naive_bayes_tfidf.ipynb
-│   ├── 07_random_forest_tfidf.ipynb
-│   ├── 08_svm_tfidf.ipynb
+│   ├── bow/
+│   │   ├── 01_bow_logistic_regression.ipynb
+│   │   ├── 02_bow_naive_bayes.ipynb
+│   │   ├── 03_bow_random_forest.ipynb
+│   │   └── 04_bow_svm.ipynb
 │   │
-│   ├── 09_logistic_regression_embeddings.ipynb
-│   ├── 10_random_forest_embeddings.ipynb
-│   ├── 11_svm_embeddings.ipynb
+│   ├── tfidf/
+│   │   ├── 05_tfidf_logistic_regression.ipynb
+│   │   ├── 06_tfidf_naive_bayes.ipynb
+│   │   ├── 07_tfidf_random_forest.ipynb
+│   │   └── 08_tfidf_svm.ipynb
 │   │
-│   ├── 12_bilstm.ipynb
-│   ├── 13_distilbert.ipynb
-│   └── 14_final_predictions.ipynb
+│   ├── tfidf_bigrams/
+│   │   ├── 09_tfidf_bigrams_logistic_regression.ipynb
+│   │   ├── 10_tfidf_bigrams_naive_bayes.ipynb
+│   │   ├── 11_tfidf_bigrams_random_forest.ipynb
+│   │   └── 12_tfidf_bigrams_svm.ipynb
+│   │
+│   ├── word_embeddings/
+│   │   ├── 13_embeddings_logistic_regression.ipynb
+│   │   └── 14_embeddings_random_forest.ipynb
+│   │
+│   ├── bilstm/
+│   │   └── 16_bilstm.ipynb
+│   │
+│   ├── transformers/
+│   │   └── 17_distilbert.ipynb
+│   │
+│   └── final_evaluation/
+│       ├── 18_model_comparison.ipynb
+│       └── 19_validation_predictions.ipynb
+│
+├── models/
+│   ├── trained_models/
+│   ├── vectorizers/
+│   ├── tokenizers/
+│   └── embeddings/
 │
 ├── results/
 │   ├── confusion_matrices/
@@ -87,9 +104,10 @@ fakebusters-fake-news-classification/
 │   ├── data_loader.py
 │   ├── preprocessing.py
 │   ├── feature_extraction.py
+│   ├── bilstm.py
 │   ├── evaluator.py
-│   ├── predictor.py
-│   └── experiment_tracker.py
+│   ├── experiment_tracker.py
+│   ├── model_manager.py
 │
 ├── README.md
 └── .gitignore
@@ -97,187 +115,333 @@ fakebusters-fake-news-classification/
 
 ---
 
-# Methodology
+# Data Preprocessing Pipeline
 
-Our workflow follows a complete NLP pipeline.
+Every model uses the same preprocessing pipeline to ensure a fair comparison.
+
+The preprocessing pipeline consists of:
+
+1. Merge title and article
+2. Remove HTML tags
+3. Remove JavaScript
+4. Remove CSS
+5. Remove comments
+6. Remove URLs
+7. Remove punctuation
+8. Remove numbers
+9. Convert text to lowercase
+10. Remove stopwords
+11. Lemmatize words
+12. Create the final `combined_text`
+
+Pipeline:
 
 ```
-Dataset
+Title
+        \
+         \
+Article -----> Merge
 
 ↓
 
-Exploratory Data Analysis (EDA)
+Remove HTML
 
 ↓
 
-Train/Test Split (80/20)
+Remove URLs
 
 ↓
 
-Text Preprocessing
+Remove punctuation
 
 ↓
 
-Feature Extraction
+Remove numbers
 
 ↓
 
-Model Training
+Lowercase
 
 ↓
 
-Evaluation
+Remove stopwords
 
 ↓
 
-Model Comparison
+Lemmatization
 
 ↓
 
-Best Model Selection
-
-↓
-
-Prediction on Validation Dataset
-
-↓
-
-Deployment
+combined_text
 ```
 
 ---
 
-#  Text Preprocessing
+# Why combine the title and article?
 
-The following preprocessing techniques will be evaluated throughout the experiments:
+Several records contained missing or very short article text.
 
-- Tokenization
-- Lowercasing
-- Removing punctuation
-- Stopword removal
-- Lemmatization
-- Text cleaning
+Instead of discarding those samples, the project combines the cleaned title and cleaned article into a single field called `combined_text`.
 
----
+This approach:
 
-# Feature Extraction Techniques
-
-Three feature extraction approaches will be compared.
-
-## 1. Bag of Words (BoW)
-
-Converts each document into word occurrence counts.
+- preserves as much information as possible;
+- reduces information loss caused by missing values;
+- provides additional context to the classifier.
 
 ---
 
-## 2. TF-IDF + n-grams
+# Why lowercase the text?
 
-Measures word importance while capturing sequences of words.
+Although lowercasing is not always mandatory, especially for modern Transformer models, it was intentionally included to create a robust preprocessing pipeline for classical NLP techniques.
+
+Lowercasing:
+
+- reduces vocabulary size;
+- treats "News", "NEWS" and "news" as the same token;
+- improves feature consistency.
 
 ---
 
-## 3. Word Embeddings
+# Feature Engineering
 
-Dense semantic vector representations of words.
-
----
-
-# Machine Learning Experiments
+Several feature engineering techniques were evaluated.
 
 ## Bag of Words
 
-| Experiment | Model |
-|------------|-------------------------|
-| Exp 01 | Logistic Regression (Baseline) |
-| Exp 02 | Naïve Bayes |
-| Exp 03 | Random Forest |
-| Exp 04 | Support Vector Machine |
+Represents each document as the frequency of its words.
+
+Advantages:
+
+- very fast
+- simple
+- interpretable
 
 ---
 
-## TF-IDF + n-grams
+## TF-IDF
 
-| Experiment | Model |
-|------------|-------------------------|
-| Exp 05 | Logistic Regression |
-| Exp 06 | Naïve Bayes |
-| Exp 07 | Random Forest |
-| Exp 08 | Support Vector Machine |
+Improves Bag of Words by giving more importance to informative words while reducing the influence of very common words.
+
+---
+
+## TF-IDF + Bigrams
+
+Captures two-word expressions in addition to individual words.
+
+Example:
+
+```
+fake news
+
+machine learning
+
+white house
+```
+
+This allows the model to preserve additional context.
+
+---
+
+## TF-IDF Weighted GloVe Embeddings
+
+Instead of using sparse vectors, this approach represents each article using pretrained GloVe word embeddings.
+
+Each word embedding is weighted using its TF-IDF importance before averaging.
+
+This combines semantic meaning with statistical importance.
+
+---
+
+## Bi-LSTM
+
+The final Deep Learning experiment uses a Bidirectional Long Short-Term Memory network.
+
+Unlike classical Machine Learning, the Bi-LSTM learns sequential relationships between words and captures contextual dependencies within the article.
+
+---
+
+# Models Evaluated
+
+## Bag of Words
+
+- Logistic Regression
+- Naive Bayes
+- Random Forest
+- Linear SVM
+
+---
+
+## TF-IDF
+
+- Logistic Regression
+- Naive Bayes
+- Random Forest
+- Linear SVM
+
+---
+
+## TF-IDF + Bigrams
+
+- Logistic Regression
+- Naive Bayes
+- Random Forest
+- Linear SVM
 
 ---
 
 ## Word Embeddings
 
-| Experiment | Model |
-|------------|-------------------------|
-| Exp 09 | Logistic Regression |
-| Exp 10 | Random Forest |
-| Exp 11 | Support Vector Machine |
-
-> Note: Naïve Bayes is intentionally excluded because it is designed for non-negative count-based features (e.g., BoW or TF-IDF) and is not suitable for dense word embeddings.
+- Logistic Regression
+- Random Forest
 
 ---
 
 ## Deep Learning
 
-| Experiment | Model |
-|------------|----------------|
-| Exp 12 | Bidirectional LSTM |
+- Bi-LSTM
 
 ---
 
-## Transfer Learning
+## Future Work
 
-| Experiment | Model |
-|------------|----------------|
-| Exp 13 | DistilBERT Fine-tuning |
-
----
-
-#  Model Evaluation
-
-Each experiment will be evaluated using:
-
-- Accuracy
-- Precision
-- Recall
-- F1-score
-- Confusion Matrix
-
-The best-performing model will be selected based primarily on the **F1-score**, as it balances precision and recall, making it well-suited for fake news classification.
+- DistilBERT
+- RoBERTa
 
 ---
 
 # Experiment Tracking
 
-Every experiment is automatically logged in:
+Every experiment stores:
+
+- model
+- feature representation
+- train accuracy
+- test accuracy
+- precision
+- recall
+- F1-score
+- accuracy gap
+- confusion matrix
+- trained model
+- vectorizer (when applicable)
+
+All experiments are automatically recorded inside:
 
 ```
 results/model_tracking.csv
 ```
 
-### Tracking Fields
+---
 
-| Column |
-|----------|
-| model_id |
-| model_name |
-| features |
-| preprocessing |
-| algorithm |
-| train_accuracy |
-| test_accuracy |
-| precision |
-| recall |
-| f1_score |
-| notes |
-| model_path |
+# Experimental Results
+
+The best experimental model was:
+
+**Bi-LSTM**
+
+Performance:
+
+- Test Accuracy ≈ 99.91%
+- Precision ≈ 99.90%
+- Recall ≈ 99.93%
+- F1-score ≈ 99.91%
 
 ---
 
-# Deployment
+Other top-performing models included:
 
-The final selected model will be deployed using **Hugging Face Spaces**, allowing users to enter a news headline or article and receive a prediction indicating whether the content is likely to be fake or real.
+- Random Forest + TF-IDF
+- Random Forest + TF-IDF + Bigrams
+- Random Forest + Word Embeddings
+
+---
+
+# Production Recommendation
+
+The objective of this project was not only to identify the model with the highest predictive performance, but also to evaluate the engineering trade-offs required for deploying a real-world NLP system.
+
+## Experimental Winner
+
+The best-performing model during experimentation was the **Bi-LSTM**.
+
+Performance:
+
+| Metric | Value |
+|---------|------:|
+| Test Accuracy | **99.9124%** |
+| Precision | **99.9000%** |
+| Recall | **99.9250%** |
+| F1-score | **99.9125%** |
+| Train-Test Accuracy Gap | **0.000545** |
+
+The Bi-LSTM achieved the highest overall predictive performance and demonstrated excellent generalization with an extremely small train-test gap.
+
+---
+
+## Production Recommendation
+
+Although the Bi-LSTM achieved the best results, the final production recommendation is:
+
+**Logistic Regression + Bag of Words**
+
+Performance:
+
+| Metric | Value |
+|---------|------:|
+| Test Accuracy | **99.4868%** |
+| Precision | **99.5494%** |
+| Recall | **99.4250%** |
+| F1-score | **99.4872%** |
+| Train-Test Accuracy Gap | **0.005101** |
+
+Although the Bi-LSTM outperformed Logistic Regression, the improvement in F1-score was only:
+
+**0.999125 − 0.994872 = 0.004253**
+
+This represents less than half of one percentage point while requiring substantially greater computational resources.
+
+The Logistic Regression model offers several engineering advantages:
+
+- significantly faster training;
+- faster inference;
+- lower computational cost;
+- lower memory consumption;
+- simpler deployment;
+- easier maintenance;
+- greater explainability;
+- easier debugging.
+
+For many real-world applications, these operational advantages outweigh the relatively small improvement in predictive performance provided by the Bi-LSTM.
+
+---
+
+## Final Decision
+
+This project therefore distinguishes between two different objectives.
+
+### Experimental Winner
+
+**Bi-LSTM**
+
+Selected because it achieved the highest predictive performance.
+
+---
+
+### Production Recommendation
+
+**Logistic Regression + Bag of Words**
+
+Selected because it provides the best balance between:
+
+- predictive performance;
+- computational efficiency;
+- scalability;
+- explainability;
+- deployment simplicity;
+- operational cost.
+
+This decision demonstrates that model selection should consider both predictive performance and engineering constraints rather than relying solely on benchmark metrics.
 
 ---
 
@@ -286,19 +450,23 @@ The final selected model will be deployed using **Hugging Face Spaces**, allowin
 ## Karima
 
 - Design project architecture
+- Exploratory Data Analysis (EDA
 - Build project structure
-- Train six experiments
+- Train  experiments
 - Experiment tracking
+- Data analysis
 - Deployment
 
 ---
 
 ## Kriti
 
-- Exploratory Data Analysis (EDA)
-- Train six experiments
+- Exploratory Data Analysis (EDA
+- Build project structure
+- Train  experiments
+- Experiment tracking
 - Data analysis
-- Performance comparison
+- Deployment
 
 ---
 
@@ -317,5 +485,6 @@ The final selected model will be deployed using **Hugging Face Spaces**, allowin
 
 | Name | Role |
 |------|------|
-| **Karima Mzoughi** | Project Architecture, Machine Learning, Deployment |
+| **Karima Mzoughi** | Exploratory Data Analysis (EDA), Project Architecture | Machine Learning, Deployment |
 | **Kriti Amin.** | Exploratory Data Analysis (EDA), Machine Learning, Deployment |
+
