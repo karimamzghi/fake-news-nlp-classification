@@ -485,8 +485,6 @@ This decision demonstrates that model selection should consider both predictive 
 
 | Name | Role |
 |------|------|
-| **Karima Mzoughi** | EDA |Project Architecture | Machine Learning, Deployment |
+| **Karima Mzoughi** | Exploratory Data Analysis (EDA), Project Architecture | Machine Learning, Deployment |
 | **Kriti Amin.** | Exploratory Data Analysis (EDA), Machine Learning, Deployment |
-
-Ironhack
 
