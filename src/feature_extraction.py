@@ -14,10 +14,7 @@ def create_bow_features(X_train, X_test, column="combined_text"):
 
 
 def load_glove_model():
-    """
-    Load pre-trained GloVe embeddings from gensim.
-    First run downloads the model, later runs use the cache.
-    """
+    # Load pre-trained GloVe embeddings from gensim.
     return api.load("glove-wiki-gigaword-100")
 
 
@@ -29,10 +26,7 @@ def create_glove_tfidf_weighted_embedding_features(
     vector_size=100,
     max_features=10000
 ):
-    """
-    Fast TF-IDF weighted GloVe document embeddings.
-    """
-
+    # Fast TF-IDF weighted GloVe document embeddings.
     tfidf_vectorizer = TfidfVectorizer(max_features=max_features)
 
     X_train_tfidf = tfidf_vectorizer.fit_transform(X_train[column])
@@ -50,3 +44,37 @@ def create_glove_tfidf_weighted_embedding_features(
     X_test_embeddings = X_test_tfidf.dot(embedding_matrix)
 
     return X_train_embeddings, X_test_embeddings, tfidf_vectorizer
+
+def create_tfidf_features(
+    X_train,
+    X_test,
+    column="combined_text",
+    max_features=10000
+):
+    # The vectorizer learns its vocabulary only from the training data.
+    vectorizer = TfidfVectorizer(
+        max_features=max_features
+    )
+
+    X_train_tfidf = vectorizer.fit_transform(X_train[column])
+    X_test_tfidf = vectorizer.transform(X_test[column])
+
+    return X_train_tfidf, X_test_tfidf, vectorizer
+
+
+def create_tfidf_bigram_features(
+    X_train,
+    X_test,
+    column="combined_text",
+    max_features=10000
+):
+    #  ngram_range=(1, 2) means: individual words (unigrams) , two-word combinations (bigrams)
+    vectorizer = TfidfVectorizer(
+        ngram_range=(1, 2),
+        max_features=max_features
+    )
+
+    X_train_tfidf = vectorizer.fit_transform(X_train[column])
+    X_test_tfidf = vectorizer.transform(X_test[column])
+
+    return X_train_tfidf, X_test_tfidf, vectorizer
