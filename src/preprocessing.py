@@ -76,3 +76,15 @@ def preprocess_data(X):
     )
 
     return X
+
+
+def preprocess_transformer_data(X):
+    X = X.copy()
+
+    X["combined_text"] = (
+        X["title"].fillna("")
+        + " "
+        + X["text"].fillna("")
+    )
+
+    return X
